@@ -179,7 +179,7 @@ public class StringBasedJdbcQuery extends AbstractJdbcQuery {
 		}
 
 		this.cachedRowMapperFactory = new CachedRowMapperFactory(
-				() -> rowMapperFactory.create(queryMethod.getResultProcessor().getReturnedType().getReturnedType()));
+				() -> rowMapperFactory.getRowMapper(queryMethod.getResultProcessor().getReturnedType().getReturnedType()));
 		this.cachedResultSetExtractorFactory = new CachedResultSetExtractorFactory(
 				this.cachedRowMapperFactory::getRowMapper);
 
@@ -376,11 +376,11 @@ public class StringBasedJdbcQuery extends AbstractJdbcQuery {
 
 		if (hasDynamicProjection) {
 
-			RowMapper<Object> rowMapperToUse = rowMapperFactory.create(resultProcessor.getReturnedType().getDomainType());
+			RowMapper<Object> rowMapperToUse = rowMapperFactory.getRowMapper(resultProcessor.getReturnedType().getDomainType());
 
 			ResultProcessingConverter converter = new ResultProcessingConverter(resultProcessor,
 					this.converter.getMappingContext(), this.converter.getEntityInstantiators());
-			return new ConvertingRowMapper<>(rowMapperToUse, converter);
+			return new ConvertingRowMapper(rowMapperToUse, converter);
 		}
 
 		return cachedRowMapperFactory.getRowMapper();
